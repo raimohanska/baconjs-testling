@@ -1,4 +1,4 @@
-expect = require("chai").expect
+expect = require("expect.js")
 Bacon = (require "../src/Bacon").Bacon
 _ = Bacon._
 
@@ -54,7 +54,7 @@ if grep
     verifySwitchingAggressively src, expectedEvents
 
 @expectPropertyEvents = (src, expectedEvents) ->
-  expect(expectedEvents.length > 0).to.deep.equal(true)
+  expect(expectedEvents.length > 0).to.eql(true)
   property = null
   events = []
   events2 = []
@@ -73,11 +73,11 @@ if grep
               events2.push(event.value())
             Bacon.noMore
   it "is a Property", ->
-    expect(property instanceof Bacon.Property).to.deep.equal(true)
+    expect(property instanceof Bacon.Property).to.eql(true)
   it "outputs expected events in order", ->
-    expect(events).to.deep.equal(toValues(expectedEvents))
+    expect(events).to.eql(toValues(expectedEvents))
   it "outputs expected events in order when subscribing after each value", ->
-    expect(events2).to.deep.equal(justValues(expectedEvents))
+    expect(events2).to.eql(justValues(expectedEvents))
   it "has correct final state", ->
     verifyFinalState(property, lastNonError(expectedEvents))
   it "cleans up observers", verifyCleanup
@@ -88,7 +88,7 @@ verifySingleSubscriber = (srcF, expectedEvents) ->
       if event.isEnd()
         done()
       else
-        expect(event instanceof Bacon.Initial).to.deep.equal(false)
+        expect(event instanceof Bacon.Initial).to.eql(false)
         events.push(toValue(event))
 
 # get each event with new subscriber
@@ -99,7 +99,7 @@ verifySwitching = (srcF, expectedEvents, done) ->
         if event.isEnd()
           done()
         else
-          expect(event instanceof Bacon.Initial).to.deep.equal(false)
+          expect(event instanceof Bacon.Initial).to.eql(false)
           events.push(toValue(event))
           src.subscribe(newSink())
           Bacon.noMore
@@ -128,7 +128,7 @@ verifySwitchingWithUnsub = (srcF, expectedEvents, done) ->
             ended = true
             done()
           else
-            expect(event instanceof Bacon.Initial).to.deep.equal(false)
+            expect(event instanceof Bacon.Initial).to.eql(false)
             events.push(toValue(event))
             prevUnsub = unsub
             noMoreExpected = true
@@ -151,7 +151,7 @@ verifyStreamWith = (description, srcF, expectedEvents, collectF) ->
     before (done) ->
       collectF(src, events, done)
     it "outputs expected value in order", ->
-      expect(events).to.deep.equal(toValues(expectedEvents))
+      expect(events).to.eql(toValues(expectedEvents))
     it "the stream is exhausted", ->
        verifyExhausted src
     it "cleans up observers", verifyCleanup
@@ -170,14 +170,14 @@ verifySwitchingAggressively = (srcF, expectedEvents, done) ->
           if event.isEnd()
             done()
           else
-            expect(event instanceof Bacon.Initial).to.deep.equal(false)
+            expect(event instanceof Bacon.Initial).to.eql(false)
             events.push(toValue(event))
             unsub() if unsub?
             unsub = src.subscribe(newSink())
             Bacon.noMore
       unsub = src.subscribe(newSink())
     it "outputs expected value in order", ->
-      expect(events).to.deep.equal(toValues(expectedEvents))
+      expect(events).to.eql(toValues(expectedEvents))
     it "the stream is exhausted", ->
        verifyExhausted src
     it "cleans up observers", verifyCleanup
@@ -186,7 +186,7 @@ verifyExhausted = (src) ->
   events = []
   src.subscribe (event) ->
     events.push(event)
-  expect(events[0].isEnd()).to.deep.equal(true)
+  expect(events[0].isEnd()).to.eql(true)
 
 lastNonError = (events) ->
   _.last(_.filter(((e) -> toValue(e) != "<error>"), events))
@@ -195,11 +195,11 @@ verifyFinalState = (property, value) ->
   events = []
   property.subscribe (event) ->
     events.push(event)
-  expect(toValues(events)).to.deep.equal(toValues([value, "<end>"]))
+  expect(toValues(events)).to.eql(toValues([value, "<end>"]))
 
 verifyCleanup = @verifyCleanup = ->
   for seq in seqs
-    expect(seq.source.hasSubscribers()).to.deep.equal(false)
+    expect(seq.source.hasSubscribers()).to.eql(false)
   seqs = []
 
 toValues = (xs) ->

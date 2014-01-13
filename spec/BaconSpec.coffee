@@ -1,4 +1,5 @@
-expect = require("chai").expect
+expect = require("expect.js")
+
 Bacon = require("../src/Bacon").Bacon
 Mocks = require( "./Mock")
 TickScheduler = require("./TickScheduler").TickScheduler
@@ -37,19 +38,19 @@ describe "Bacon._", ->
     expect(_.empty([1])).to.be.false
     expect(_.empty("1")).to.be.false
   describe "tail", ->
-    expect(_.tail([1,2,3])).to.deep.equal([2,3])
-    expect(_.tail([1])).to.deep.equal([])
-    expect(_.tail([])).to.deep.equal([])
+    expect(_.tail([1,2,3])).to.eql([2,3])
+    expect(_.tail([1])).to.eql([])
+    expect(_.tail([])).to.eql([])
   describe "filter", ->
-    expect(_.filter(_.empty, ["","1",[],[2]])).to.deep.equal(["",[]])
+    expect(_.filter(_.empty, ["","1",[],[2]])).to.eql(["",[]])
   describe "map", ->
     expect(_.map(_.head, [
       [], [1], [2,2], [3,3,3]
-    ])).to.deep.equal([
+    ])).to.eql([
       undefined, 1, 2, 3
     ])
   describe "flatMap", ->
-    expect(_.flatMap(((x) -> [x, x]), [1,2,3])).to.deep.equal([1,1,2,2,3,3])
+    expect(_.flatMap(((x) -> [x, x]), [1,2,3])).to.eql([1,1,2,2,3,3])
   describe "each", ->
     it "provides key and value to iterator", ->
       expectKeyVals = (x, expectedKeys, expectedValues) ->
@@ -59,15 +60,15 @@ describe "Bacon._", ->
           keys.push(key)
           values.push(value)
         )
-        expect([keys, values]).to.deep.equal([expectedKeys, expectedValues])
+        expect([keys, values]).to.eql([expectedKeys, expectedValues])
       expectKeyVals(
         {cat:"furry",bird:"feathery"}, ["cat","bird"], ["furry","feathery"]
       )
       expectKeyVals([1,2,3], ["0","1","2"], [1,2,3])
   describe "toArray", ->
-    expect(_.toArray(2)).to.deep.equal([2])
+    expect(_.toArray(2)).to.eql([2])
     it "ignores rest of arguments", ->
-      expect(_.toArray(1,1,2)).to.deep.equal([1])
+      expect(_.toArray(1,1,2)).to.eql([1])
     it "should, when given an array, return it back (not a copy)", ->
       arr = []
       expect(_.toArray(arr)).to.equal(arr)
@@ -101,12 +102,12 @@ describe "Bacon._", ->
       expect(_.any([true, false, true])).to.be.true
   describe "without", ->
     expect(_.without("apple", ["bacon","apple","apple","omelette"]))
-      .to.deep.equal(["bacon","omelette"])
+      .to.eql(["bacon","omelette"])
   describe "remove", ->
     expect(_.remove("apple", ["bacon","apple","apple","omelette"]))
-      .to.deep.equal(["apple"])
+      .to.eql(["apple"])
     expect(_.remove("raisin", ["bacon","apple","apple","omelette"]))
-      .to.deep.equal(undefined)
+      .to.eql(undefined)
   describe "fold", ->
     expect(_.fold([1,2,3,4,5], 0, (s, n) -> s + n)).to.equal(15)
   describe "toString", ->
@@ -300,14 +301,14 @@ describe "Bacon.fromEventTarget", ->
     emitter = new EventEmitter()
     Bacon.fromEventTarget(emitter, "data").take(1).subscribe ->
     emitter.emit "data", "x"
-    expect(emitter.listeners("data").length).to.deep.equal(0)
+    expect(emitter.listeners("data").length).to.eql(0)
 
   it "should clean up event listeners from DOM object", ->
     emitter = new EventEmitter()
     element = toEventTarget emitter
     dispose = Bacon.fromEventTarget(element, "click").subscribe ->
     dispose()
-    expect(emitter.listeners("click").length).to.deep.equal(0)
+    expect(emitter.listeners("click").length).to.eql(0)
 
   it "toString", ->
     expect(Bacon.fromEventTarget({}, "click").toString()).to.equal("Bacon.fromEventTarget({},click)")
@@ -438,7 +439,7 @@ describe "EventStream.doAction", ->
     s.onValue(->)
     s.onValue(->)
     bus.push(1)
-    expect(called).to.deep.equal([1])
+    expect(called).to.eql([1])
   describe "does not alter the stream", ->
     expectStreamEvents(
       -> series(1, [1, 2]).doAction(->)
@@ -587,7 +588,7 @@ describe "EventStream.skipDuplicates", ->
       values = []
       noDups.take(1).onValue (x) -> values.push(x)
       b.push 1
-      expect(values).to.deep.equal(expected)
+      expect(values).to.eql(expected)
     round([1])
     round([])
     round([])
@@ -1021,7 +1022,7 @@ describe "When an Event triggers another one in the same stream, while dispatchi
       values.push(v)
     bus.push "a"
     bus.push "b"
-    expect(values).to.deep.equal(["a", "A", "B", "A", "B", "b"])
+    expect(values).to.eql(["a", "A", "B", "A", "B", "b"])
   it "EventStream.take(1) works correctly (bug fix)", ->
     bus = new Bacon.Bus
     values = []
@@ -1029,7 +1030,7 @@ describe "When an Event triggers another one in the same stream, while dispatchi
       bus.push("onValue triggers a side-effect here")
       values.push(v)
     bus.push("foo")
-    expect(values).to.deep.equal(["foo"])
+    expect(values).to.eql(["foo"])
 
 describe "EventStream.awaiting(other)", ->
   describe "indicates whether s1 has produced output after s2 (or only the former has output so far)", ->
@@ -1329,7 +1330,7 @@ describe "Property.filter", ->
     s.push(2)
     values = []
     p.onValue((v) => values.push(v))
-    expect(values).to.deep.equal([1])
+    expect(values).to.eql([1])
   describe "can filter by Property value", ->
     expectPropertyEvents(
       ->
@@ -1647,7 +1648,7 @@ describe "Property update is atomic", ->
     out.onValue((x) -> results.push(x))
     src.push(1)
     src.push(2)
-    expect(results).to.deep.equal([3,6])
+    expect(results).to.eql([3,6])
     expect(calls).to.equal(2)
   describe "yet respects subscriber return values (bug fix)", ->
     expectStreamEvents(
@@ -1699,14 +1700,14 @@ describe "independent observables created within the dispatch loop", ->
     Bacon.once(1).onValue ->
       s = Bacon.once(1).concat(Bacon.once(2))
       s.onValue((x) -> result.push(x))
-    expect(result).to.deep.equal([1,2])
+    expect(result).to.eql([1,2])
   it "Property.delay", ->
     result = []
     Bacon.once(1).onValue ->
       c = Bacon.constant(1)
       s = Bacon.combineAsArray([c, c]).delay(1).map(".0")
       s.onValue((x) -> result.push(x))
-    expect(result).to.deep.equal([1])
+    expect(result).to.eql([1])
 
 describe "when subscribing within the dispatch loop", ->
   describe "single subscriber", ->
@@ -2113,7 +2114,7 @@ describe "EventStream.scan", ->
     outputs = []
     bus = new Bacon.Bus()
     bus.scan(0, -> 1).onValue((value) -> outputs.push(value))
-    expect(outputs).to.deep.equal([0])
+    expect(outputs).to.eql([0])
   describe "yields null seed value", ->
     expectPropertyEvents(
       -> series(1, [1]).scan(null, ->1)
@@ -2219,7 +2220,7 @@ describe "EventStream.diff", ->
     outputs = []
     bus = new Bacon.Bus()
     bus.diff(0, -> 1).onValue((value) -> outputs.push(value))
-    expect(outputs).to.deep.equal([])
+    expect(outputs).to.eql([])
   it "toString", ->
     expect(Bacon.once(1).diff(0, (->)).toString()).to.equal("Bacon.once(1).diff(0,function)")
 
@@ -2533,40 +2534,40 @@ describe "combineTemplate", ->
   it "supports arrays", ->
     value = {key: [{ x: 1 }, { x: 2 }]}
     Bacon.combineTemplate(value).onValue (x) ->
-      expect(x).to.deep.equal(value)
-      expect(x.key instanceof Array).to.deep.equal(true) # seems that the former passes even if x is not an array
+      expect(x).to.eql(value)
+      expect(x.key instanceof Array).to.eql(true) # seems that the former passes even if x is not an array
     value = [{ x: 1 }, { x: 2 }]
     Bacon.combineTemplate(value).onValue (x) ->
-      expect(x).to.deep.equal(value)
-      expect(x instanceof Array).to.deep.equal(true)
+      expect(x).to.eql(value)
+      expect(x instanceof Array).to.eql(true)
     value = {key: [{ x: 1 }, { x: 2 }], key2: {}}
     Bacon.combineTemplate(value).onValue (x) ->
-      expect(x).to.deep.equal(value)
-      expect(x.key instanceof Array).to.deep.equal(true)
+      expect(x).to.eql(value)
+      expect(x.key instanceof Array).to.eql(true)
     value = {key: [{ x: 1 }, { x: Bacon.constant(2) }]}
     Bacon.combineTemplate(value).onValue (x) ->
-      expect(x).to.deep.equal({key: [{ x: 1 }, { x: 2 }]})
-      expect(x.key instanceof Array).to.deep.equal(true) # seems that the former passes even if x is not an array
+      expect(x).to.eql({key: [{ x: 1 }, { x: 2 }]})
+      expect(x.key instanceof Array).to.eql(true) # seems that the former passes even if x is not an array
   it "supports nulls", ->
     value = {key: null}
     Bacon.combineTemplate(value).onValue (x) ->
-      expect(x).to.deep.equal(value)
+      expect(x).to.eql(value)
   it "supports NaNs", ->
     value = {key: NaN}
     Bacon.combineTemplate(value).onValue (x) ->
-      expect(isNaN(x.key)).to.deep.equal(true)
+      expect(isNaN(x.key)).to.eql(true)
   it "supports dates", ->
     value = {key: new Date()}
     Bacon.combineTemplate(value).onValue (x) ->
-      expect(x).to.deep.equal(value)
+      expect(x).to.eql(value)
   it "supports regexps", ->
     value = {key: /[0-0]/i}
     Bacon.combineTemplate(value).onValue (x) ->
-      expect(x).to.deep.equal(value)
+      expect(x).to.eql(value)
   it "supports functions", ->
     value = {key: ->}
     Bacon.combineTemplate(value).onValue (x) ->
-      expect(x).to.deep.equal(value)
+      expect(x).to.eql(value)
   it "toString", ->
     expect(Bacon.combineTemplate({ thing: Bacon.never(), const: "a" }).toString()).to.equal("Bacon.combineTemplate({thing:Bacon.never(),const:a})")
 
@@ -2612,7 +2613,7 @@ describe "Observable.subscribe and onValue", ->
     s.push "lol"
     dispose()
     s.push "wut"
-    expect(values).to.deep.equal(["lol"])
+    expect(values).to.eql(["lol"])
 
 describe "Observable.onEnd", ->
   it "is called on stream end", ->
@@ -2620,9 +2621,9 @@ describe "Observable.onEnd", ->
     ended = false
     s.onEnd(-> ended = true)
     s.push("LOL")
-    expect(ended).to.deep.equal(false)
+    expect(ended).to.eql(false)
     s.end()
-    expect(ended).to.deep.equal(true)
+    expect(ended).to.eql(true)
 
 describe "Field value extraction", ->
   describe "extracts field value", ->
@@ -2646,8 +2647,8 @@ describe "Field value extraction", ->
         "result"
     }
     Bacon.once(object).map(".method").onValue((x) -> result = x)
-    expect(result).to.deep.equal("result")
-    expect(context).to.deep.equal(object)
+    expect(result).to.eql("result")
+    expect(context).to.eql(object)
 
 testSideEffects = (wrapper, method) ->
   ->
@@ -2708,7 +2709,7 @@ describe "Bacon.Bus", ->
     push = new Bacon.Bus()
     bus.plug(push)
     push.push("lol")
-    expect(values).to.deep.equal(["lol"])
+    expect(values).to.eql(["lol"])
     dispose()
     verifyCleanup()
   describe "works with looped streams", ->
@@ -2740,7 +2741,7 @@ describe "Bacon.Bus", ->
     input.end()
     dispose()
     bus.onValue(=>) # this latter subscription should not go to the ended source anymore
-    expect(subscribed).to.deep.equal(1)
+    expect(subscribed).to.eql(1)
   it "unsubscribes inputs on end() call", ->
     bus = new Bacon.Bus()
     input = new Bacon.Bus()
@@ -2750,14 +2751,14 @@ describe "Bacon.Bus", ->
     input.push("a")
     bus.end()
     input.push("b")
-    expect(toValues(events)).to.deep.equal(["a", "<end>"])
+    expect(toValues(events)).to.eql(["a", "<end>"])
   it "handles cold single-event streams correctly (bug fix)", ->
     values = []
     bus = new Bacon.Bus()
     bus.plug(Bacon.once("x"))
     bus.plug(Bacon.once("y"))
     bus.onValue((x) -> values.push(x))
-    expect(values).to.deep.equal(["x", "y"])
+    expect(values).to.eql(["x", "y"])
 
   it "handles end() calls even when there are no subscribers", ->
     bus = new Bacon.Bus()
@@ -2781,7 +2782,7 @@ describe "Bacon.Bus", ->
     bus.onValue(-> called = true)
     bus.end()
     bus.push("LOL")
-    expect(called).to.deep.equal(false)
+    expect(called).to.eql(false)
 
   it "does not plug after end() call", ->
     plugged = false
@@ -2789,7 +2790,7 @@ describe "Bacon.Bus", ->
     bus.end()
     bus.plug(new Bacon.EventStream((sink) -> plugged = true; (->)))
     bus.onValue(->)
-    expect(plugged).to.deep.equal(false)
+    expect(plugged).to.eql(false)
 
   it "returns unplug function from plug", ->
     values = []
@@ -2800,7 +2801,7 @@ describe "Bacon.Bus", ->
     src.push("x")
     unplug()
     src.push("y")
-    expect(values).to.deep.equal(["x"])
+    expect(values).to.eql(["x"])
 
   it "allows consumers to re-subscribe after other consumers have unsubscribed (bug fix)", ->
     bus = new Bacon.Bus
@@ -2811,7 +2812,7 @@ describe "Bacon.Bus", ->
     o = []
     otherBus.onValue (v) -> o.push(v)
     bus.push("foo")
-    expect(o).to.deep.equal(["foo"])
+    expect(o).to.eql(["foo"])
   it "toString", ->
     expect(new Bacon.Bus().toString()).to.equal("Bacon.Bus()")
 
@@ -2839,7 +2840,7 @@ describe "EventStream", ->
     bus.subscribe(f)
     bus.subscribe(f)
     bus.push("bacon")
-    expect(values).to.deep.equal(["bacon", "bacon"])
+    expect(values).to.eql(["bacon", "bacon"])
   it "handles one subscriber added twice just like two separate subscribers (case unsub)", ->
     values = []
     bus = new Bacon.Bus()
@@ -2850,7 +2851,7 @@ describe "EventStream", ->
     unsub = bus.subscribe(f)
     unsub()
     bus.push("bacon")
-    expect(values).to.deep.equal(["bacon"])
+    expect(values).to.eql(["bacon"])
 
 describe "Bacon.fromBinder", ->
   describe "Provides an easier alternative to the EventStream constructor, allowing sending multiple events at a time", ->
