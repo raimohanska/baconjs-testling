@@ -6,4 +6,4 @@ catch error
 
 describe "Just testing", ->
   it "should always work", ->
-    console.log "hooray"
+    console.log "hooray!"
