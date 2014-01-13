@@ -1,4 +1,4 @@
-expect = require("chai").expect
+expect = require("expect.js")
 
 class Mock
   constructor: (methodNames...) -> 
@@ -36,7 +36,7 @@ mockFunction = (name) ->
       throw "not called: #{name}"
     actualCall = calls[0]
     calls.splice(0,1)
-    expect(actualCall).to.deep.equal(args)
+    expect(actualCall).to.eql(args)
   method.doReturn = (returnValue) ->
     {
       when: (args...) ->
