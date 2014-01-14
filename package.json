@@ -53,7 +53,7 @@
       "ipad": [ 6 ]
     },
     "harness": "mocha",
-    "files": "spec/BaconSpec.coffee"
+    "files": "spec/PromiseSpec.coffee"
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha --compilers coffee:coffee-script spec/*Spec.coffee",
